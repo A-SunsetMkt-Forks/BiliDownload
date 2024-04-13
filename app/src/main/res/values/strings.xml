@@ -46,4 +46,14 @@
     <string name="video_description_8k">8K</string>
     <string name="video_description_unknown">未知</string>
     <string name="iv_download_status_image_content_description">下载状态</string>
+    <string name="iv_back_text">Back\n</string>
+    <string name="iv_about_title_text">关于BVD</string>
+    <string name="about_us">关于我们</string>
+    <string name="invitation">参与内测</string>
+    <string name="about_version">当前版本</string>
+    <string name="about_license">开源组件许可</string>
+    <string name="about_diagnosis">网络诊断</string>
+    <string name="about_build_id">构建ID（点击复制）</string>
+    <string name="about_instruction">特别说明</string>
+    <string name="grade">给我们评分</string>
 </resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
+    android:layout_centerVertical="true"
+    android:layout_marginEnd="10dp"
+    android:alpha="0.6"
+    android:contentDescription="@string/iv_back_text"
+    android:scaleX="0.8"
+    android:scaleY="0.8"
+    android:src="@drawable/ic_arrow_button_1" />

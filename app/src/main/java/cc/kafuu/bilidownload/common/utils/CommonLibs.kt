@@ -43,4 +43,8 @@ object CommonLibs {
 
     fun requireDownloadCacheDir(entityId: Long) = requireExternalFilesDir("cache", "download/task-e$entityId")
     fun requireResourcesDir() = requireExternalFilesDir("resources")
+
+    fun getVersionName() = requireContext().packageManager.let {
+        it.getPackageInfo(requireContext().packageName, 0).versionName
+    }
 }

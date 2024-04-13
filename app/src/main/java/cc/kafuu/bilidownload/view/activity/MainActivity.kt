@@ -1,14 +1,15 @@
 package cc.kafuu.bilidownload.view.activity
 
+import android.content.Intent
 import android.util.Log
 import cc.kafuu.bilidownload.BR
 import cc.kafuu.bilidownload.R
 import cc.kafuu.bilidownload.common.adapter.FragmentAdapter
 import cc.kafuu.bilidownload.common.core.CoreActivity
 import cc.kafuu.bilidownload.common.network.IServerCallback
-import cc.kafuu.bilidownload.common.room.entity.DownloadTaskEntity
 import cc.kafuu.bilidownload.common.network.manager.NetworkManager
 import cc.kafuu.bilidownload.common.network.model.BiliPlayStreamData
+import cc.kafuu.bilidownload.common.room.entity.DownloadTaskEntity
 import cc.kafuu.bilidownload.common.utils.CommonLibs
 import cc.kafuu.bilidownload.common.utils.PermissionUtils
 import cc.kafuu.bilidownload.databinding.ActivityMainBinding
@@ -18,6 +19,7 @@ import cc.kafuu.bilidownload.view.fragment.HomeFragment
 import cc.kafuu.bilidownload.view.fragment.MeFragment
 import cc.kafuu.bilidownload.viewmodel.activity.MainViewModel
 import kotlinx.coroutines.runBlocking
+
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 class MainActivity : CoreActivity<ActivityMainBinding, MainViewModel>(
@@ -84,6 +86,11 @@ class MainActivity : CoreActivity<ActivityMainBinding, MainViewModel>(
     }
 
     override fun initViews() {
+        val intent = Intent(
+            this@MainActivity,
+            AboutActivity::class.java
+        )
+        startActivity(intent)
         //downloadTest()
         mViewDataBinding.vp2Content.apply {
             adapter = FragmentAdapter(supportFragmentManager, lifecycle).apply {

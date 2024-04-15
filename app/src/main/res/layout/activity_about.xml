@@ -18,7 +18,7 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView
+       <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -31,12 +31,14 @@
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id = "@+id/tv_about_invitation"
+                    android:foreground="?attr/selectableItemBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:minHeight="40dp"
                     android:padding="10dp"
-                    android:text="@string/tv_invitation_text"
+                    android:text="@string/tv_about_invitation_text"
                     android:textSize="16sp"
                     app:drawableEndCompat="@drawable/ic_arrow_right" />
 
@@ -52,6 +54,8 @@
                     android:paddingHorizontal="10dp">
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id = "@+id/tv_about_version"
+                        android:foreground="?attr/selectableItemBackground"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -76,6 +80,8 @@
                     android:background="@color/view_split_color" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id = "@+id/tv_about_license"
+                    android:foreground="?attr/selectableItemBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -91,6 +97,8 @@
                     android:background="@color/view_split_color" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id = "@+id/tv_about_us"
+                    android:foreground="?attr/selectableItemBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -111,12 +119,14 @@
             app:cardCornerRadius="10dp">
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id = "@+id/tv_about_grade"
+                android:foreground="?attr/selectableItemBackground"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:minHeight="40dp"
                 android:padding="10dp"
-                android:text="@string/tv_grade_text"
+                android:text="@string/tv_about_grade_text"
                 android:textSize="16sp"
                 app:drawableEndCompat="@drawable/ic_arrow_right" />
         </androidx.cardview.widget.CardView>

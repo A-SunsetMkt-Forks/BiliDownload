@@ -1,5 +1,6 @@
 package cc.kafuu.bilidownload.view.activity
 
+import android.content.Intent
 import android.util.Log
 import cc.kafuu.bilidownload.BR
 import cc.kafuu.bilidownload.R
@@ -91,6 +92,11 @@ class MainActivity : CoreActivity<ActivityMainBinding, MainViewModel>(
     override fun initViews() {
         setImmersionStatusBar()
         //downloadTest()
+        val intent = Intent (
+            this@MainActivity,
+            AboutActivity::class.java
+        )
+      startActivity(intent)
         mViewDataBinding.vp2Content.apply {
             adapter = FragmentAdapter(supportFragmentManager, lifecycle).apply {
                 addFragmentView(getFragments())

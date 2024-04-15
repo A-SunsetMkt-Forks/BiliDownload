@@ -10,6 +10,7 @@
             type="cc.kafuu.bilidownload.viewmodel.activity.AboutViewModel" />
 
         <import type="cc.kafuu.bilidownload.common.utils.CommonLibs" />
+        <import type="cc.kafuu.bilidownload.model.AboutItemType" />
     </data>
 
     <LinearLayout
@@ -32,6 +33,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id = "@+id/tv_about_invitation"
+                    android:onClick="@{()->viewModel.itemOnClickListener(AboutItemType.ITEM_INVITATION)}"
                     android:foreground="?attr/selectableItemBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -55,6 +57,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id = "@+id/tv_about_version"
+                        android:onClick="@{()->viewModel.itemOnClickListener(AboutItemType.ITEM_VERSION)}"
                         android:foreground="?attr/selectableItemBackground"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -81,6 +84,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id = "@+id/tv_about_license"
+                    android:onClick="@{()->viewModel.itemOnClickListener(AboutItemType.ITEM_LICENSE)}"
                     android:foreground="?attr/selectableItemBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -98,6 +102,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id = "@+id/tv_about_us"
+                    android:onClick="@{()->viewModel.itemOnClickListener(AboutItemType.ITEM_US)}"
                     android:foreground="?attr/selectableItemBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -120,6 +125,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id = "@+id/tv_about_grade"
+                android:onClick="@{()->viewModel.itemOnClickListener(AboutItemType.ITEM_GRADE)}"
                 android:foreground="?attr/selectableItemBackground"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

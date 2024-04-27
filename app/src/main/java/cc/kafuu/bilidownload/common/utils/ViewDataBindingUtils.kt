@@ -5,9 +5,13 @@ package cc.kafuu.bilidownload.common.utils
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.text.Html
+import android.text.Spanned
 import android.text.TextUtils
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -104,5 +108,23 @@ fun bindOnEditorAction(textView: TextView, onEditorActionLambda: () -> Unit) {
     textView.setOnEditorActionListener { _, _, _ ->
         onEditorActionLambda()
         true
+    }
+}
+
+@BindingAdapter("bindSpannable")
+fun bindSpannable(textView: TextView, htmlText: String?) {
+    if (htmlText == null) {
+        textView.text = ""
+    } else {
+        val spannedText: Spanned =
+            Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)
+        textView.text = spannedText
+    }
+}
+
+@BindingAdapter("bindSpinnerEntries")
+fun bindSpinnerEntries(spinner: Spinner, entries: Array<String>) {
+    spinner.apply {
+        adapter = ArrayAdapter(spinner.context, R.layout.spinner_item, entries)
     }
 }

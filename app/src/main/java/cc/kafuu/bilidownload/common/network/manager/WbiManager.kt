@@ -3,6 +3,7 @@ package cc.kafuu.bilidownload.common.network.manager
 import cc.kafuu.bilidownload.common.network.IServerCallback
 import cn.hutool.core.util.URLUtil
 import cn.hutool.crypto.SecureUtil
+import java.io.IOException
 import java.util.StringJoiner
 
 object WbiManager {
@@ -23,6 +24,7 @@ object WbiManager {
         }
     }.toString()
 
+    @Throws(IOException::class, IllegalStateException::class)
     private fun syncCheckUpdateWbi(callback: IServerCallback<Pair<String, String>>? = null): Boolean {
         // 若缓存失效则重置
         if (isCacheInvalid()) resetCache()
@@ -43,7 +45,7 @@ object WbiManager {
         if (isCacheInvalid()) resetCache()
 
         if (wbiCache != null) {
-            // 缓存还有效
+            callback.onSuccess(0, 0, "Cache valid", wbiCache!!)
             return
         }
 
@@ -75,21 +77,7 @@ object WbiManager {
         wbiCacheTime = System.currentTimeMillis()
     }
 
-    /**
-     * 根据给定的URL路径和参数映射生成带有WBI签名的请求参数字符串。
-     *
-     * @note 此函数可能会同步调用网络请求，应在非UI线程中执行。
-     *
-     * @throws IllegalStateException 如果请求WBI更新失败。
-     *
-     * @param paramMap 请求的参数映射，可以为null。
-     * @return 带有WBI签名的请求参数字符串，如果不需要签名则返回null。
-     */
-    fun syncGenerateSignature(paramMap: Map<String, Any>?): String {
-        // 尝试请求更新Wbi
-        if (!syncCheckUpdateWbi()) {
-            throw IllegalStateException("WbiManager: Wbi request failed")
-        }
+    private fun doGenerateSignature(paramMap: Map<String, Any>?): String {
         val params = StringJoiner("&")
         // 使用LinkedHashMap保持参数的插入顺序
         LinkedHashMap(paramMap).run {
@@ -102,5 +90,49 @@ object WbiManager {
                 }
         }
         return "$params&w_rid=${SecureUtil.md5(params.toString() + getMixinKey())}"
+    }
+
+    /**
+     * 根据给定的URL路径和参数映射生成带有WBI签名的请求参数字符串。
+     *
+     * @note 此函数可能会同步调用网络请求，应在非UI线程中执行。
+     *
+     * @throws IllegalStateException 如果请求WBI更新失败。
+     *
+     * @param paramMap 请求的参数映射，可以为null。
+     * @return 带有WBI签名的请求参数字符串，如果不需要签名则返回null。
+     */
+    @Throws(IOException::class, IllegalStateException::class)
+    fun syncGenerateSignature(paramMap: Map<String, Any>?): String {
+        // 尝试请求更新Wbi
+        if (!syncCheckUpdateWbi()) {
+            throw IllegalStateException("WbiManager: Wbi request failed")
+        }
+        return doGenerateSignature(paramMap)
+    }
+
+    /**
+     * 以异步的形式根据给定的URL路径和参数映射生成带有WBI签名的请求参数字符串。
+     *
+     * @throws IllegalStateException 如果请求WBI更新失败。
+     *
+     * @param paramMap 请求的参数映射，可以为null。
+     * @return 带有WBI签名的请求参数字符串，如果不需要签名则返回null。
+     */
+    fun asyncGenerateSignature(paramMap: Map<String, Any>?, callback: IServerCallback<String>) {
+        asyncCheckUpdateWbi(object : IServerCallback<Pair<String, String>> {
+            override fun onSuccess(
+                httpCode: Int,
+                code: Int,
+                message: String,
+                data: Pair<String, String>
+            ) {
+                callback.onSuccess(httpCode, code, message, doGenerateSignature(paramMap))
+            }
+
+            override fun onFailure(httpCode: Int, code: Int, message: String) {
+                callback.onFailure(httpCode, code, message)
+            }
+        })
     }
 }

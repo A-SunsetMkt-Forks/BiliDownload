@@ -10,9 +10,11 @@ class SearchViewModel : CoreViewModel() {
     }
 
     val searchContextLiveData = MutableLiveData<String>()
+    val searchRequestLiveData = MutableLiveData<String>()
 
     fun onSearch() {
         Log.d(TAG, "onSearch: ${searchContextLiveData.value}")
+        searchRequestLiveData.value = searchContextLiveData.value
     }
 
 }

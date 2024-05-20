@@ -8,7 +8,7 @@ import cc.kafuu.bilidownload.common.network.model.BiliSearchMediaResultData
 import cc.kafuu.bilidownload.common.network.model.BiliSearchVideoResultData
 import cc.kafuu.bilidownload.common.network.service.BiliApiService
 
-class BiliSearchRepository(biliApiService: BiliApiService) : BiliRepository(biliApiService) {
+class BiliSearchRepository(private val biliApiService: BiliApiService) : BiliRepository() {
     companion object {
         //视频
         private const val SEARCH_TYPE_VIDEO = "video"
@@ -30,7 +30,7 @@ class BiliSearchRepository(biliApiService: BiliApiService) : BiliRepository(bili
     private fun getFullUrl(param: String) =
         NetworkConfig.buildFullUrl("/x/web-interface/wbi/search/type", param)
 
-    private fun <T> searchCheckWbi(
+    private fun <T> requestWbi(
         searchType: String,
         keyword: String,
         page: Int,
@@ -49,33 +49,33 @@ class BiliSearchRepository(biliApiService: BiliApiService) : BiliRepository(bili
         })
     }
 
-    fun searchVideo(
+    fun requestSearchVideo(
         keyword: String,
         page: Int,
         callback: IServerCallback<BiliSearchData<BiliSearchVideoResultData>>
     ) {
-        searchCheckWbi(SEARCH_TYPE_VIDEO, keyword, page, callback) { _, _, _, data ->
-            biliApiService.searchVideo(getFullUrl(data)).enqueue(callback) { it }
+        requestWbi(SEARCH_TYPE_VIDEO, keyword, page, callback) { _, _, _, data ->
+            biliApiService.requestSearchVideo(getFullUrl(data)).enqueue(callback) { it }
         }
     }
 
-    fun searchMediaBangumi(
+    fun requestSearchMediaBangumi(
         keyword: String,
         page: Int,
         callback: IServerCallback<BiliSearchData<BiliSearchMediaResultData>>
     ) {
-        searchCheckWbi(SEARCH_TYPE_MEDIA_BANGUMI, keyword, page, callback) { _, _, _, data ->
-            biliApiService.searchMedia(getFullUrl(data)).enqueue(callback) { it }
+        requestWbi(SEARCH_TYPE_MEDIA_BANGUMI, keyword, page, callback) { _, _, _, data ->
+            biliApiService.requestSearchMedia(getFullUrl(data)).enqueue(callback) { it }
         }
     }
 
-    fun searchMediaFt(
+    fun requestSearchMediaFt(
         keyword: String,
         page: Int,
         callback: IServerCallback<BiliSearchData<BiliSearchMediaResultData>>
     ) {
-        searchCheckWbi(SEARCH_TYPE_MEDIA_FT, keyword, page, callback) { _, _, _, data ->
-            biliApiService.searchMedia(getFullUrl(data)).enqueue(callback) { it }
+        requestWbi(SEARCH_TYPE_MEDIA_FT, keyword, page, callback) { _, _, _, data ->
+            biliApiService.requestSearchMedia(getFullUrl(data)).enqueue(callback) { it }
         }
     }
 }

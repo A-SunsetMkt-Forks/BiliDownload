@@ -4,46 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="cc.kafuu.bilidownload.viewmodel.fragment.SearchListViewModel" />
 
         <variable
             name="data"
-            type="cc.kafuu.bilidownload.model.BiliMedia" />
+            type="cc.kafuu.bilidownload.common.model.bili.BiliMediaModel" />
 
         <import type="cc.kafuu.bilidownload.common.utils.CommonLibs" />
 
         <import type="cc.kafuu.bilidownload.R" />
 
         <import type="cc.kafuu.bilidownload.common.utils.ViewDataBindingUtilsKt" />
+
+        <import type="cc.kafuu.bilidownload.common.utils.GlideUtils" />
     </data>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:elevation="10dp"
-        app:cardCornerRadius="15dp">
+        app:cardElevation="@dimen/card_item_elevation"
+        app:cardCornerRadius="@dimen/card_item_corner_radius">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground">
+            android:foreground="?attr/selectableItemBackground"
+            android:onClick="@{() -> viewModel.enterDetails(data)}">
 
             <ImageView
                 android:id="@+id/iv_video_cover"
                 bindImageUrl="@{data.cover}"
                 bindPlaceholder="@{CommonLibs.INSTANCE.getDrawable(R.drawable.ic_2233)}"
-                bindTransformation="@{viewModel.centerCrop}"
+                bindTransformation="@{GlideUtils.INSTANCE.centerCrop}"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:contentDescription="@string/iv_video_cover_content_description"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_2233"
-                android:contentDescription="@string/iv_video_cover_content_description" />
+                tools:src="@drawable/ic_2233" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -66,23 +70,24 @@
                     android:maxLines="1"
                     android:textColor="@color/primary_color"
                     android:textStyle="bold"
-                    tools:text="请问您今天要来点兔子吗？BLOOM"/>
+                    tools:text="请问您今天要来点兔子吗？BLOOM" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_author"
-                        bindSpannable="@{data.desc}"
+                        bindSpannable="@{data.description}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="2"
                         android:textColor="@color/text_default_color"
-                        tools:text="心爱在木造房屋小镇度过的第二个夏天即将结束，季节即将变成各种盛大活动满载的秋季。不论是在学校还是在Rabbit House，都有很多开心的事情！心爱、智乃以及大家都难以抑制对未来的期待……！"/>
+                        tools:text="心爱在木造房屋小镇度过的第二个夏天即将结束，季节即将变成各种盛大活动满载的秋季。不论是在学校还是在Rabbit House，都有很多开心的事情！心爱、智乃以及大家都难以抑制对未来的期待……！" />
                 </LinearLayout>
             </LinearLayout>
 

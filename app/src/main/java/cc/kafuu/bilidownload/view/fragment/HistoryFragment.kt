@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cc.kafuu.bilidownload.common.adapter.HistoryRVAdapter
-import cc.kafuu.bilidownload.model.LoadingStatus
+import cc.kafuu.bilidownload.common.model.LoadingStatus
 import cc.kafuu.bilidownload.viewmodel.fragment.HistoryViewModel
 import com.arialyy.annotations.DownloadGroup
 import com.arialyy.aria.core.Aria
@@ -12,10 +12,11 @@ import com.arialyy.aria.core.task.DownloadGroupTask
 
 class HistoryFragment : RVFragment<HistoryViewModel>(HistoryViewModel::class.java) {
     companion object {
+        private const val KEY_STATUSES = "statuses"
         @JvmStatic
         fun newInstance(vararg statuses: Int) = HistoryFragment().apply {
             arguments = Bundle().apply {
-                putIntArray("statuses", statuses)
+                putIntArray(KEY_STATUSES, statuses)
             }
         }
     }
@@ -29,7 +30,7 @@ class HistoryFragment : RVFragment<HistoryViewModel>(HistoryViewModel::class.jav
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mStatuses = arguments?.getIntArray("statuses") ?: intArrayOf()
+        mStatuses = arguments?.getIntArray(KEY_STATUSES) ?: intArrayOf()
         Aria.download(this).register()
     }
 

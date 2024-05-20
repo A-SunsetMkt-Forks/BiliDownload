@@ -6,15 +6,15 @@ import cc.kafuu.bilidownload.common.network.manager.NetworkManager
 import cc.kafuu.bilidownload.common.network.model.BiliSearchData
 import cc.kafuu.bilidownload.common.network.model.BiliSearchMediaResultData
 import cc.kafuu.bilidownload.common.network.model.BiliSearchVideoResultData
-import cc.kafuu.bilidownload.model.BiliMedia
-import cc.kafuu.bilidownload.model.BiliVideo
-import cc.kafuu.bilidownload.model.LoadingStatus
-import cc.kafuu.bilidownload.model.SearchType
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import cc.kafuu.bilidownload.common.model.LoadingStatus
+import cc.kafuu.bilidownload.common.model.SearchType
+import cc.kafuu.bilidownload.common.model.bili.BiliMediaModel
+import cc.kafuu.bilidownload.common.model.bili.BiliVideoModel
+import cc.kafuu.bilidownload.view.activity.VideoDetailsActivity
 
 class SearchListViewModel : RVViewModel() {
-    val centerCrop = CenterCrop()
     var keyword: String? = null
+
     @SearchType
     var searchType: Int = SearchType.VIDEO
 
@@ -39,17 +39,17 @@ class SearchListViewModel : RVViewModel() {
         loadingStatusMessageMutableLiveData.value = loadingStatus
 
         when (searchType) {
-            SearchType.VIDEO -> mBiliSearchRepository.searchVideo(
+            SearchType.VIDEO -> mBiliSearchRepository.requestSearchVideo(
                 keyword!!, mNextPage,
                 createSearchCallback(onSucceeded, onFailed, loadMore)
             )
 
-            SearchType.MEDIA_BANGUMI -> mBiliSearchRepository.searchMediaBangumi(
+            SearchType.MEDIA_BANGUMI -> mBiliSearchRepository.requestSearchMediaBangumi(
                 keyword!!, mNextPage,
                 createSearchCallback(onSucceeded, onFailed, loadMore)
             )
 
-            SearchType.MEDIA_FT -> mBiliSearchRepository.searchMediaFt(
+            SearchType.MEDIA_FT -> mBiliSearchRepository.requestSearchMediaFt(
                 keyword!!, mNextPage,
                 createSearchCallback(onSucceeded, onFailed, loadMore)
             )
@@ -86,9 +86,9 @@ class SearchListViewModel : RVViewModel() {
         } else {
             mutableListOf()
         }
-        searchData.addAll(data.result.orEmpty().map { result ->
+        searchData.addAll(data.result.orEmpty().mapNotNull { result ->
             when (result) {
-                is BiliSearchVideoResultData -> disposeResult(result)
+                is BiliSearchVideoResultData -> if (result.type == "video") disposeResult(result) else null
                 is BiliSearchMediaResultData -> disposeResult(result)
                 else -> throw IllegalStateException("Unknown result from $result")
             }
@@ -100,24 +100,32 @@ class SearchListViewModel : RVViewModel() {
         listMutableLiveData.postValue(searchData)
     }
 
-    private fun disposeResult(element: BiliSearchVideoResultData) = BiliVideo(
+    private fun disposeResult(element: BiliSearchVideoResultData) = BiliVideoModel(
         author = element.author,
-        authorId = element.mid,
         bvid = element.bvid,
         title = element.title,
         description = element.description,
-        pic = "https:${element.pic}",
+        cover = "https:${element.pic}",
         pubDate = element.pubDate,
         sendDate = element.sendDate,
         duration = element.duration
     )
 
-    private fun disposeResult(element: BiliSearchMediaResultData) = BiliMedia(
+    private fun disposeResult(element: BiliSearchMediaResultData) = BiliMediaModel(
         mediaId = element.mediaId,
         seasonId = element.seasonId,
         title = element.title,
         cover = element.cover,
         mediaType = element.mediaType,
-        desc = element.desc
+        description = element.desc,
+        pubDate = element.pubTime
     )
+
+    fun enterDetails(element: BiliVideoModel) {
+        startActivity(VideoDetailsActivity::class.java, VideoDetailsActivity.buildIntent(element))
+    }
+
+    fun enterDetails(element: BiliMediaModel) {
+        startActivity(VideoDetailsActivity::class.java, VideoDetailsActivity.buildIntent(element))
+    }
 }

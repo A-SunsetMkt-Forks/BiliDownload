@@ -1,19 +1,13 @@
 package cc.kafuu.bilidownload.view.activity
 
-// import android.content.Intent
-import android.util.Log
+import android.os.Bundle
 import cc.kafuu.bilidownload.BR
 import cc.kafuu.bilidownload.R
 import cc.kafuu.bilidownload.common.adapter.FragmentAdapter
 import cc.kafuu.bilidownload.common.core.CoreActivity
-import cc.kafuu.bilidownload.common.network.IServerCallback
-import cc.kafuu.bilidownload.common.network.manager.NetworkManager
-import cc.kafuu.bilidownload.common.network.model.BiliPlayStreamData
-import cc.kafuu.bilidownload.common.room.entity.DownloadTaskEntity
-import cc.kafuu.bilidownload.common.utils.CommonLibs
-import cc.kafuu.bilidownload.common.utils.PermissionUtils
 import cc.kafuu.bilidownload.databinding.ActivityMainBinding
-import cc.kafuu.bilidownload.model.MainTabType
+import cc.kafuu.bilidownload.common.model.MainTabType
+import cc.kafuu.bilidownload.common.model.event.MainTabSwitchEvent
 import cc.kafuu.bilidownload.service.DownloadService
 import cc.kafuu.bilidownload.view.fragment.HomeFragment
 import cc.kafuu.bilidownload.view.fragment.MeFragment
@@ -22,7 +16,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
 class MainActivity : CoreActivity<ActivityMainBinding, MainViewModel>(
@@ -30,73 +26,22 @@ class MainActivity : CoreActivity<ActivityMainBinding, MainViewModel>(
     R.layout.activity_main,
     BR.viewModel
 ) {
-
     companion object {
-        private const val TAG = "MainActivity"
         private val mScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     }
 
-    var first: Boolean = true
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        EventBus.getDefault().register(this)
+    }
 
-    fun downloadTest() {
-        NetworkManager.biliVideoRepository.getPlayStreamData(
-            "BV1Ai4y197Wt",
-            481763422,
-            object :
-                IServerCallback<BiliPlayStreamData> {
-                override fun onSuccess(
-                    httpCode: Int,
-                    code: Int,
-                    message: String,
-                    data: BiliPlayStreamData
-                ) {
-                    Log.d(
-                        TAG,
-                        "onSuccess: httpCode: $httpCode, code: $code, message: $message, data: $data"
-                    )
-
-                    Log.d(
-                        TAG,
-                        "onSuccess: ${data.dash.video.map { "${it.id}, ${it.codecs}, ${it.mimeType}" }}}"
-                    )
-                    runBlocking {
-                        val taskId = CommonLibs.requireAppDatabase().downloadTaskDao().insert(
-                            DownloadTaskEntity.createEntity(
-                                "BV1Ai4y197Wt",
-                                481763422,
-                                data.dash.video[2],
-                                data.dash.audio[2]
-                            )
-                        )
-                        DownloadService.startDownload(this@MainActivity, taskId)
-                        Log.d(TAG, "onSuccess: $taskId")
-                    }
-
-                }
-
-                override fun onFailure(httpCode: Int, code: Int, message: String) {
-                    Log.e(TAG, "onFailure: httpCode: $httpCode, code: $code, message: $message")
-                }
-
-            })
-//        FFMpegJNI.mergeMedia(
-//            "/storage/emulated/0/Android/data/cc.kafuu.bilidownload/files/cache/download/task-e10/merge2.mp4",
-//            arrayOf(
-//                "/storage/emulated/0/Android/data/cc.kafuu.bilidownload/files/cache/download/task-e10/1169319048-1-30216.mp4",
-//                "/storage/emulated/0/Android/data/cc.kafuu.bilidownload/files/cache/download/task-e10/1169319048-1-30032.mp4"
-//            ),
-//            arrayOf()
-//        )
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 
     override fun initViews() {
         setImmersionStatusBar()
-        //downloadTest()
-//        val intent = Intent (
-//            this@MainActivity,
-//            AboutActivity::class.java
-//        )
-//      startActivity(intent)
         mViewDataBinding.vp2Content.apply {
             adapter = FragmentAdapter(supportFragmentManager, lifecycle).apply {
                 addFragmentView(getFragments())
@@ -110,16 +55,6 @@ class MainActivity : CoreActivity<ActivityMainBinding, MainViewModel>(
         mViewModel.tabPositionLiveData.observe(this) { position ->
             if (mViewDataBinding.vp2Content.currentItem !== position) {
                 mViewDataBinding.vp2Content.setCurrentItem(position, false)
-            } else {
-                if (first) {
-                    first = false
-                } else {
-                    if (!PermissionUtils.hasStoragePermissions(this)) {
-                        PermissionUtils.requestStoragePermissions(this)
-                    } else {
-                        downloadTest()
-                    }
-                }
             }
         }
         mScope.launch { DownloadService.resumeDownload(this@MainActivity) }
@@ -129,4 +64,9 @@ class MainActivity : CoreActivity<ActivityMainBinding, MainViewModel>(
         HomeFragment.newInstance(),
         MeFragment.newInstance()
     )
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: MainTabSwitchEvent) {
+        mViewModel.doChangeTabPosition(event.mainTabType)
+    }
 }

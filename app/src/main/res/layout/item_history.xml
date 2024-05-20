@@ -17,17 +17,19 @@
 
         <import type="cc.kafuu.bilidownload.R" />
 
-        <import type="cc.kafuu.bilidownload.common.utils.BiliCodeUtils"/>
+        <import type="cc.kafuu.bilidownload.common.utils.BiliCodeUtils" />
 
-        <import type="cc.kafuu.bilidownload.common.room.entity.DownloadTaskEntity"/>
+        <import type="cc.kafuu.bilidownload.common.utils.TimeUtils" />
+
+        <import type="cc.kafuu.bilidownload.common.room.entity.DownloadTaskEntity" />
     </data>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:elevation="10dp"
-        app:cardCornerRadius="15dp">
+        app:cardCornerRadius="@dimen/card_item_corner_radius"
+        app:cardElevation="@dimen/card_item_elevation">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -43,10 +45,10 @@
                 bindTransformation="@{viewModel.centerCrop}"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:contentDescription="@string/iv_video_cover_content_description"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_2233"
-                android:contentDescription="@string/iv_video_cover_content_description" />
+                tools:src="@drawable/ic_2233" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -64,11 +66,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="@{data.title}"
                     android:textColor="@color/primary_color"
+                    android:textSize="14sp"
                     android:textStyle="bold"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
+                    tools:text="文色徒然" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_part_title"
@@ -76,53 +80,25 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="@{data.partTitle}"
                     android:textColor="@color/text_default_color"
-                    android:maxLines="1"
-                    android:ellipsize="end"/>
+                    android:textSize="12sp"
+                    tools:text="01 千夜版" />
 
-
-                <LinearLayout
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_create_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_movie"
-                        android:contentDescription="@{data.getQualityDetailsVideo()}" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv_quality_details_video"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{data.getQualityDetailsVideo()}"
-                        android:textColor="@color/text_default_color"
-                        android:maxLines="1"
-                        android:ellipsize="end"/>
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginStart="5dp"
-                        android:src="@drawable/ic_music"
-                        android:contentDescription="@{data.getQualityDetailsAudio()}" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv_quality_details_audio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{data.getQualityDetailsAudio()}"
-                        android:textColor="@color/text_default_color"
-                        android:maxLines="1"
-                        android:ellipsize="end"/>
-
-                </LinearLayout>
-
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@{TimeUtils.INSTANCE.formatTimestamp(data.downloadTask.createTime)}"
+                    android:textColor="@color/text_default_color"
+                    android:textSize="12sp"
+                    tools:text="2024-05-14 16:00:00" />
             </LinearLayout>
 
             <LinearLayout
@@ -141,21 +117,21 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginHorizontal="10dp"
-                    android:src="@{viewModel.getStatusIcon(data)}"
                     android:contentDescription="@string/iv_download_status_image_content_description"
-                    tools:src="@drawable/ic_download_done_cloud"/>
+                    android:src="@{viewModel.getStatusIcon(data)}"
+                    tools:src="@drawable/ic_download_done_cloud" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_status_text"
+                    bindVisible="@{data.downloadTask.status == DownloadTaskEntity.STATUS_DOWNLOADING}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@{viewModel.getStatusText(data)}"
                     android:textColor="@color/secondary_color"
                     android:textSize="10sp"
-                    tools:text="100%"
-                    bindVisible="@{data.downloadTask.status == DownloadTaskEntity.STATUS_DOWNLOADING}"
-                    tools:ignore="SmallSp" />
+                    tools:ignore="SmallSp"
+                    tools:text="100%" />
 
             </LinearLayout>
 

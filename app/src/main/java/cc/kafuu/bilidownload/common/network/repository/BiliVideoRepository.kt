@@ -3,10 +3,11 @@ package cc.kafuu.bilidownload.common.network.repository
 import cc.kafuu.bilidownload.common.network.IServerCallback
 import cc.kafuu.bilidownload.common.network.model.BiliPlayStreamDash
 import cc.kafuu.bilidownload.common.network.model.BiliPlayStreamData
+import cc.kafuu.bilidownload.common.network.model.BiliSeasonData
 import cc.kafuu.bilidownload.common.network.model.BiliVideoData
 import cc.kafuu.bilidownload.common.network.service.BiliApiService
 
-class BiliVideoRepository(biliApiService: BiliApiService) : BiliRepository(biliApiService) {
+class BiliVideoRepository(private val biliApiService: BiliApiService) : BiliRepository() {
     companion object {
         val FNVAL_FLAGS = listOf(
 //            1,    // MP4 格式，仅 H.264 编码（与 FLV、DASH 格式互斥）
@@ -20,29 +21,49 @@ class BiliVideoRepository(biliApiService: BiliApiService) : BiliRepository(biliA
         ).reduce { acc, flag -> acc or flag }
     }
 
-    fun getPlayStreamDash(
+    fun requestPlayStreamDash(
         bvid: String,
         cid: Long,
         callback: IServerCallback<BiliPlayStreamDash>
     ) {
-        biliApiService.getPlayStream(null, bvid, cid, null, FNVAL_FLAGS).enqueue(callback) {
+        biliApiService.requestPlayStream(null, bvid, cid, null, FNVAL_FLAGS).enqueue(callback) {
             it.dash
         }
     }
 
-    fun getPlayStreamData(
+    fun requestPlayStreamData(
         bvid: String,
         cid: Long,
         callback: IServerCallback<BiliPlayStreamData>
     ) {
-        biliApiService.getPlayStream(null, bvid, cid, null, FNVAL_FLAGS).enqueue(callback) { it }
+        biliApiService.requestPlayStream(null, bvid, cid, null, FNVAL_FLAGS)
+            .enqueue(callback) { it }
     }
 
-    fun getVideoDetail(bvid: String, callback: IServerCallback<BiliVideoData>) {
-        biliApiService.getVideoDetail(null, bvid).enqueue(callback) { it }
+    fun requestVideoDetail(bvid: String, callback: IServerCallback<BiliVideoData>) {
+        biliApiService.requestVideoDetail(null, bvid).enqueue(callback) { it }
     }
 
-    fun syncGetVideoDetail(bvid: String, onFailure: ((Int, Int, String) -> Unit)? = null): BiliVideoData? {
-        return biliApiService.getVideoDetail(null, bvid).execute(onFailure) { it }
+    fun syncRequestVideoDetail(
+        bvid: String,
+        onFailure: ((Int, Int, String) -> Unit)? = null
+    ) = biliApiService.requestVideoDetail(null, bvid).execute(onFailure) { it }
+
+    fun requestSeasonDetailBySeasonId(seasonId: Long, callback: IServerCallback<BiliSeasonData>) {
+        biliApiService.requestSeasonDetail(seasonId, null).enqueue(callback) { it }
     }
+
+    fun syncRequestSeasonDetailBySeasonId(
+        seasonId: Long,
+        onFailure: ((Int, Int, String) -> Unit)? = null
+    ) = biliApiService.requestSeasonDetail(seasonId, null).execute(onFailure) { it }
+
+    fun requestSeasonDetailByEpId(epId: Long, callback: IServerCallback<BiliSeasonData>) {
+        biliApiService.requestSeasonDetail(null, epId).enqueue(callback) { it }
+    }
+
+    fun syncRequestSeasonDetailByEpId(
+        epId: Long,
+        onFailure: ((Int, Int, String) -> Unit)? = null
+    ) = biliApiService.requestSeasonDetail(null, epId).execute(onFailure) { it }
 }
